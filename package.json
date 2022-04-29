@@ -6,7 +6,8 @@
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "publish": "electron-builder -p always"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
@@ -38,15 +39,19 @@
           "x64",
           "arm64"
         ]
-      },
-      "publish": [
-        "github"
-      ]
+      }
     },
     "dmg": {
       "sign": false
     },
-    "afterSign": "notarize.js"
+    "afterSign": "notarize.js",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Sayalip77",
+        "repo": "https://github.com/Sayalip77/electron"
+      }
+    ]
   },
   "author": "WeConnect.Chat",
   "license": "CC0-1.0",
@@ -56,9 +61,11 @@
   },
   "dependencies": {
     "dotenv": "^16.0.0",
+    "electron-log": "^4.4.6",
     "electron-notarize": "^1.2.1",
     "electron-osx-sign": "^0.6.0",
     "electron-packager": "^15.5.1",
-    "electron-store": "^8.0.1"
+    "electron-store": "^8.0.1",
+    "electron-updater": "^5.0.1"
   }
 }

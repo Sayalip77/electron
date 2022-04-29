@@ -1,13 +1,18 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, session, Menu, Tray, dialog } = require("electron");
 const path = require("path");
-
 const Store = require("electron-store");
 const store = new Store();
+const log = require('electron-log');
+const {autoUpdater} = require("electron-updater");
+
 let mainWindow = null;
 let force_quit = false;
 let isMainWindowHidden = false;
 let tray = null;
+
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
 
 const menu = Menu.buildFromTemplate([
   {
@@ -141,6 +146,28 @@ function createWindow(width, height) {
   // loading.webContents.openDevTools();
 }
 
+autoUpdater.on('checking-for-update', () => {
+  sendStatusToWindow('Checking for update...');
+})
+autoUpdater.on('update-available', (info) => {
+  sendStatusToWindow('Update available.');
+})
+autoUpdater.on('update-not-available', (info) => {
+  sendStatusToWindow('Update not available.');
+})
+autoUpdater.on('error', (err) => {
+  sendStatusToWindow('Error in auto-updater. ' + err);
+})
+autoUpdater.on('download-progress', (progressObj) => {
+  let log_message = "Download speed: " + progressObj.bytesPerSecond;
+  log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+  log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+  sendStatusToWindow(log_message);
+})
+autoUpdater.on('update-downloaded', (info) => {
+  sendStatusToWindow('Update downloaded');
+});
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -177,6 +204,7 @@ if (!gotTheLock) {
         isMainWindowHidden = false;
       }
     });
+    autoUpdater.checkForUpdatesAndNotify();
   });
 }
 
