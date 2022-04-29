@@ -1,6 +1,6 @@
 {
   "name": "WeConnect-chat",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "WeConnect.Chat",
   "main": "main.js",
   "scripts": {
@@ -9,7 +9,7 @@
     "dist": "electron-builder",
     "publish": "electron-builder -p always"
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/Sayalip77/electron",
   "keywords": [
     "Electron",
     "quick",
