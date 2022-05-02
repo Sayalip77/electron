@@ -78,7 +78,32 @@ function createWindow(width, height) {
     log.info(text);
     loading.webContents.send('message', text);
   }
-  
+
+  autoUpdater.checkForUpdatesAndNotify();
+
+  autoUpdater.on('checking-for-update', () => {
+    sendStatusToWindow('Checking for update...');
+  })
+  autoUpdater.on('update-available', (info) => {
+    sendStatusToWindow('Update available.');
+  })
+  autoUpdater.on('update-not-available', (info) => {
+    sendStatusToWindow('Update not available.');
+  })
+  autoUpdater.on('error', (err) => {
+    sendStatusToWindow('Error in auto-updater. ' + err);
+  })
+  autoUpdater.on('download-progress', (progressObj) => {
+    let log_message = "Download speed: " + progressObj.bytesPerSecond;
+    log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+    log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+    sendStatusToWindow(log_message);
+  })
+  autoUpdater.on('update-downloaded', (info) => {
+    sendStatusToWindow('Update downloaded');
+    autoUpdater.quitAndInstall();
+  });
+
   loading.webContents.once("dom-ready", () => {
     const isFirstTime = store.get("hasOpen");
     const appVersion = store.get("app-version");
@@ -88,31 +113,6 @@ function createWindow(width, height) {
       store.set("app-version", app.getVersion());
       mainWindow.webContents.session.clearStorageData();
     }
-    autoUpdater.checkForUpdatesAndNotify();
-
-    autoUpdater.on('checking-for-update', () => {
-      sendStatusToWindow('Checking for update...');
-    })
-    autoUpdater.on('update-available', (info) => {
-      sendStatusToWindow('Update available.');
-    })
-    autoUpdater.on('update-not-available', (info) => {
-      sendStatusToWindow('Update not available.');
-    })
-    autoUpdater.on('error', (err) => {
-      sendStatusToWindow('Error in auto-updater. ' + err);
-    })
-    autoUpdater.on('download-progress', (progressObj) => {
-      let log_message = "Download speed: " + progressObj.bytesPerSecond;
-      log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-      log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-      sendStatusToWindow(log_message);
-    })
-    autoUpdater.on('update-downloaded', (info) => {
-      sendStatusToWindow('Update downloaded');
-      autoUpdater.quitAndInstall();
-    });
-
     mainWindow.webContents.once("dom-ready", () => {
       console.log("main loaded");
       mainWindow.show();
