@@ -119,6 +119,12 @@ function createWindow(width, height) {
         });
       }
     });
+
+    mainWindow.webContents.on('crashed', (e) => {
+      app.relaunch();
+      app.quit()
+    });
+
     mainWindow.loadURL("https://app.weconnect.chat/raibu");
     mainWindow.webContents.on("new-window", (e, currentURL) => {
       if (!currentURL.includes("https://accounts.google")) {
@@ -144,6 +150,11 @@ function createWindow(width, height) {
   // Open the DevTools.
   // mainWindow.webContents.openDevTools();
   // loading.webContents.openDevTools();
+}
+
+function sendStatusToWindow(text) {
+  log.info(text);
+  mainWindow.webContents.send('message', text);
 }
 
 autoUpdater.on('checking-for-update', () => {
