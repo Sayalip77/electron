@@ -177,6 +177,7 @@ autoUpdater.on('download-progress', (progressObj) => {
 })
 autoUpdater.on('update-downloaded', (info) => {
   sendStatusToWindow('Update downloaded');
+  autoUpdater.quitAndInstall();
 });
 
 // This method will be called when Electron has finished
