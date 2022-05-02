@@ -1,6 +1,6 @@
 {
   "name": "WeConnect-chat",
-  "version": "v1.0.5",
+  "version": "v1.0.6",
   "description": "WeConnect.Chat",
   "main": "main.js",
   "scripts": {
