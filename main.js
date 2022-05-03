@@ -196,8 +196,12 @@ if (!gotTheLock) {
   });
 }
 
+autoUpdater.on('update-available', (info) => {
+  new Notification({ title: "Update available", body: `Updating to ${app.getVersion()} version` }).show()
+})
+
 autoUpdater.on('update-downloaded', (info) => {
-  showNotification();
+  new Notification({ title: "Updated Successfully", body: `Updated to ${app.getVersion()} version` }).show();
   autoUpdater.quitAndInstall();
 });
 
