@@ -5,7 +5,6 @@ const Store = require("electron-store");
 const store = new Store();
 const log = require('electron-log');
 //const {autoUpdater} = require("electron-updater");
-const updateApp = require('update-electron-app');
 
 let mainWindow = null;
 let force_quit = false;
@@ -189,13 +188,14 @@ if (!gotTheLock) {
         isMainWindowHidden = false;
       }
     });
-    updateApp({
-      repo: 'https://github.com/Sayalip77/electron', // defaults to package.json
-      updateInterval: '5 minutes',
-      notifyUser: true
-    });
   });
 }
+
+require('update-electron-app')({
+  repo: 'https://github.com/Sayalip77/electron', // defaults to package.json
+  updateInterval: '5 minutes',
+  notifyUser: true
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
