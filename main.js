@@ -4,19 +4,16 @@ const path = require("path");
 const Store = require("electron-store");
 const store = new Store();
 const log = require('electron-log');
-const {autoUpdater} = require("electron-updater");
+//const {autoUpdater} = require("electron-updater");
+const updateApp = require('update-electron-app');
 
 let mainWindow = null;
 let force_quit = false;
 let isMainWindowHidden = false;
 let tray = null;
 
-autoUpdater.logger = log;
-autoUpdater.logger.transports.file.level = 'info';
-
-function showNotification () {
-  new Notification({ title: "Updated Successfully", body: `Updated to ${app.getVersion()} version` }).show()
-}
+// autoUpdater.logger = log;
+// autoUpdater.logger.transports.file.level = 'info';
 
 const menu = Menu.buildFromTemplate([
   {
@@ -152,8 +149,8 @@ function createWindow(width, height) {
     });
   });
   // Open the DevTools.
-  //mainWindow.webContents.openDevTools();
-  //loading.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
+  loading.webContents.openDevTools();
 }
 
 // This method will be called when Electron has finished
@@ -192,18 +189,13 @@ if (!gotTheLock) {
         isMainWindowHidden = false;
       }
     });
-    autoUpdater.checkForUpdatesAndNotify();
+    updateApp({
+      repo: 'https://github.com/Sayalip77/electron', // defaults to package.json
+      updateInterval: '5 minutes',
+      notifyUser: true
+    });
   });
 }
-
-autoUpdater.on('update-available', (info) => {
-  new Notification({ title: "Update available", body: `Updating to ${app.getVersion()} version` }).show()
-})
-
-autoUpdater.on('update-downloaded', (info) => {
-  new Notification({ title: "Updated Successfully", body: `Updated to ${app.getVersion()} version` }).show();
-  autoUpdater.quitAndInstall();
-});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
