@@ -78,11 +78,6 @@ function createWindow(width, height) {
   loading.show();
   loading.maximize();
 
-  autoUpdater.on('update-downloaded', (info) => {
-    showNotification();
-    autoUpdater.quitAndInstall();
-  });
-
   loading.webContents.once("dom-ready", () => {
     const isFirstTime = store.get("hasOpen");
     const appVersion = store.get("app-version");
@@ -200,6 +195,11 @@ if (!gotTheLock) {
     autoUpdater.checkForUpdatesAndNotify();
   });
 }
+
+autoUpdater.on('update-downloaded', (info) => {
+  showNotification();
+  autoUpdater.quitAndInstall();
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
