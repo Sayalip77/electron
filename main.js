@@ -3,16 +3,11 @@ const { app, BrowserWindow, session, Menu, Tray, dialog, Notification  } = requi
 const path = require("path");
 const Store = require("electron-store");
 const store = new Store();
-const log = require('electron-log');
-//const {autoUpdater} = require("electron-updater");
 
 let mainWindow = null;
 let force_quit = false;
 let isMainWindowHidden = false;
 let tray = null;
-
-// autoUpdater.logger = log;
-// autoUpdater.logger.transports.file.level = 'info';
 
 const menu = Menu.buildFromTemplate([
   {
@@ -194,7 +189,8 @@ if (!gotTheLock) {
 require('update-electron-app')({
   repo: 'https://github.com/Sayalip77/electron', // defaults to package.json
   updateInterval: '5 minutes',
-  notifyUser: true
+  notifyUser: true,
+  logger: require('electron-log')
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
