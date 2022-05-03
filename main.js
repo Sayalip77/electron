@@ -74,12 +74,12 @@ function createWindow(width, height) {
   loading.show();
   loading.maximize();
 
+  function sendStatusToWindow(text) {
+    log.info(text);
+    loading.webContents.send('message', text);
+  }
+  
   loading.webContents.once("dom-ready", () => {
-    function sendStatusToWindow(text) {
-      log.info(text);
-      loading.webContents.send('message', text);
-    }
-    
     autoUpdater.checkForUpdatesAndNotify();
 
     autoUpdater.on('checking-for-update', () => {
@@ -104,6 +104,7 @@ function createWindow(width, height) {
       sendStatusToWindow('Update downloaded');
       autoUpdater.quitAndInstall();
     });
+
     const isFirstTime = store.get("hasOpen");
     const appVersion = store.get("app-version");
     store.set("needToClear", false);
