@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, session, Menu, Tray, dialog } = require("electron");
+const { app, BrowserWindow, session, Menu, Tray, dialog, Notification  } = require("electron");
 const path = require("path");
 const Store = require("electron-store");
 const store = new Store();
@@ -13,6 +13,10 @@ let tray = null;
 
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
+
+function showNotification () {
+  new Notification({ title: "Updated Successfully", body: `Updated to ${app.getVersion()} version` }).show()
+}
 
 const menu = Menu.buildFromTemplate([
   {
@@ -74,43 +78,12 @@ function createWindow(width, height) {
   loading.show();
   loading.maximize();
 
-  function sendStatusToWindow(text) {
-    log.info(text);
-    loading.webContents.send('message', text);
-  }
+  autoUpdater.on('update-downloaded', (info) => {
+    showNotification();
+    autoUpdater.quitAndInstall();
+  });
 
   loading.webContents.once("dom-ready", () => {
-    autoUpdater.checkForUpdatesAndNotify();
-
-    autoUpdater.on('checking-for-updatechecking-for-update', () => {
-      console.log('checking-for-update');
-      sendStatusToWindow('Checking for update...');
-    })
-    autoUpdater.on('update-available', (info) => {
-      console.log('Update available.');
-      sendStatusToWindow('Update available.');
-    })
-    autoUpdater.on('update-not-available', (info) => {
-      console.log('Update not available');
-      sendStatusToWindow('Update not available.');
-    })
-    autoUpdater.on('error', (err) => {
-      console.log(err);
-      sendStatusToWindow('Error in auto-updater. ' + err);
-    })
-    autoUpdater.on('download-progress', (progressObj) => {
-      let log_message = "Download speed: " + progressObj.bytesPerSecond;
-      log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-      log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-      console.log(log_message);
-      sendStatusToWindow(log_message);
-    })
-    autoUpdater.on('update-downloaded', (info) => {
-      console.log('Update downloaded');
-      sendStatusToWindow('Update downloaded');
-      autoUpdater.quitAndInstall();
-    });
-
     const isFirstTime = store.get("hasOpen");
     const appVersion = store.get("app-version");
     store.set("needToClear", false);
@@ -184,8 +157,8 @@ function createWindow(width, height) {
     });
   });
   // Open the DevTools.
-   mainWindow.webContents.openDevTools();
-  // loading.webContents.openDevTools();
+  //mainWindow.webContents.openDevTools();
+  //loading.webContents.openDevTools();
 }
 
 // This method will be called when Electron has finished
@@ -224,6 +197,7 @@ if (!gotTheLock) {
         isMainWindowHidden = false;
       }
     });
+    autoUpdater.checkForUpdatesAndNotify();
   });
 }
 
