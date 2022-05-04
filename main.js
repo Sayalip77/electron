@@ -143,7 +143,7 @@ function createWindow(width, height) {
     });
   });
   // Open the DevTools.
-   mainWindow.webContents.openDevTools();
+   //mainWindow.webContents.openDevTools();
   // loading.webContents.openDevTools();
 }
 
@@ -240,7 +240,7 @@ app.on("will-quit", function () {
   mainWindow = null;
 });
 
-app.on('unresponsive', async () => {
+mainWindow.webContents.on('unresponsive', async () => {
   const { response } = await dialog.showMessageBox({
     message: 'WeConnect App has become unresponsive',
     title: 'Do you want to try forcefully reloading the app?',
@@ -248,7 +248,7 @@ app.on('unresponsive', async () => {
     cancelId: 1
   })
   if (response === 0) {
-    app.forcefullyCrashRenderer()
-    app.reload()
+    mainWindow.webContents.forcefullyCrashRenderer();
+    mainWindow.webContents.reload();
   }
 });
