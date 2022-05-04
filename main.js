@@ -1,14 +1,18 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, session, Menu, Tray, dialog, ipcMain } = require("electron");
-const { autoUpdater } = require('electron-updater');
+const { app, BrowserWindow, session, Menu, Tray, dialog } = require("electron");
 const path = require("path");
 const Store = require("electron-store");
 const store = new Store();
+const log = require('electron-log');
+const {autoUpdater} = require("electron-updater");
 
 let mainWindow = null;
 let force_quit = false;
 let isMainWindowHidden = false;
 let tray = null;
+
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
 
 const menu = Menu.buildFromTemplate([
   {
@@ -116,11 +120,6 @@ function createWindow(width, height) {
       }
     });
 
-    // mainWindow.webContents.on('crashed', (e) => {
-    //   app.relaunch();
-    //   app.quit()
-    // });
-
     mainWindow.loadURL("https://app.weconnect.chat/raibu");
     mainWindow.webContents.on("new-window", (e, currentURL) => {
       if (!currentURL.includes("https://accounts.google")) {
@@ -144,8 +143,8 @@ function createWindow(width, height) {
     });
   });
   // Open the DevTools.
-  //mainWindow.webContents.openDevTools();
-  //loading.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
+  // loading.webContents.openDevTools();
 }
 
 function sendStatusToWindow(text) {
