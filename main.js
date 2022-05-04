@@ -1,5 +1,6 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, session, Menu, Tray, dialog, autoUpdater } = require("electron");
+const { app, BrowserWindow, session, Menu, Tray, dialog, ipcMain } = require("electron");
+const { autoUpdater } = require('electron-updater');
 const path = require("path");
 const Store = require("electron-store");
 const store = new Store();
@@ -69,6 +70,10 @@ function createWindow(width, height) {
   loading.show();
   loading.maximize();
 
+  loading.once('ready-to-show', () => {
+    autoUpdater.checkForUpdatesAndNotify();
+  });
+
   loading.webContents.once("dom-ready", () => {
     const isFirstTime = store.get("hasOpen");
     const appVersion = store.get("app-version");
@@ -115,10 +120,10 @@ function createWindow(width, height) {
       }
     });
 
-    mainWindow.webContents.on('crashed', (e) => {
-      app.relaunch();
-      app.quit()
-    });
+    // mainWindow.webContents.on('crashed', (e) => {
+    //   app.relaunch();
+    //   app.quit()
+    // });
 
     mainWindow.loadURL("https://app.weconnect.chat/raibu");
     mainWindow.webContents.on("new-window", (e, currentURL) => {
@@ -183,10 +188,6 @@ if (!gotTheLock) {
         isMainWindowHidden = false;
       }
     });
-    const server = 'https://github.com';
-    const feed = `${server}/Sayalip77/electron/${process.platform}-${process.arch}/${app.getVersion()}`;
-    autoUpdater.setFeedURL(feed);
-    autoUpdater.checkForUpdates()
   });
 }
 
@@ -214,4 +215,20 @@ app.on("will-quit", function () {
   // responsive and all windows are closed.
   console.log("will-quit");
   mainWindow = null;
+});
+
+ipcMain.on('app_version', (event) => {
+  event.sender.send('app_version', { version: app.getVersion() });
+});
+
+autoUpdater.on('update-available', () => {
+  loading.webContents.send('update_available');
+});
+
+autoUpdater.on('update-downloaded', () => {
+  loading.webContents.send('update_downloaded');
+});
+
+ipcMain.on('restart_app', () => {
+  autoUpdater.quitAndInstall();
 });
