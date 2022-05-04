@@ -70,10 +70,6 @@ function createWindow(width, height) {
   loading.show();
   loading.maximize();
 
-  loading.once('ready-to-show', () => {
-    autoUpdater.checkForUpdatesAndNotify();
-  });
-
   loading.webContents.once("dom-ready", () => {
     const isFirstTime = store.get("hasOpen");
     const appVersion = store.get("app-version");
@@ -148,9 +144,36 @@ function createWindow(width, height) {
     });
   });
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
-  loading.webContents.openDevTools();
+  //mainWindow.webContents.openDevTools();
+  //loading.webContents.openDevTools();
 }
+
+function sendStatusToWindow(text) {
+  log.info(text);
+  mainWindow.webContents.send('message', text);
+}
+
+autoUpdater.on('checking-for-update', () => {
+  sendStatusToWindow('Checking for update...');
+})
+autoUpdater.on('update-available', (info) => {
+  sendStatusToWindow('Update available.');
+})
+autoUpdater.on('update-not-available', (info) => {
+  sendStatusToWindow('Update not available.');
+})
+autoUpdater.on('error', (err) => {
+  sendStatusToWindow('Error in auto-updater. ' + err);
+})
+autoUpdater.on('download-progress', (progressObj) => {
+  let log_message = "Download speed: " + progressObj.bytesPerSecond;
+  log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+  log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+  sendStatusToWindow(log_message);
+})
+autoUpdater.on('update-downloaded', (info) => {
+  sendStatusToWindow('Update downloaded');
+});
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -188,6 +211,7 @@ if (!gotTheLock) {
         isMainWindowHidden = false;
       }
     });
+    autoUpdater.checkForUpdatesAndNotify();
   });
 }
 
@@ -215,20 +239,4 @@ app.on("will-quit", function () {
   // responsive and all windows are closed.
   console.log("will-quit");
   mainWindow = null;
-});
-
-ipcMain.on('app_version', (event) => {
-  event.sender.send('app_version', { version: app.getVersion() });
-});
-
-autoUpdater.on('update-available', () => {
-  loading.webContents.send('update_available');
-});
-
-autoUpdater.on('update-downloaded', () => {
-  loading.webContents.send('update_downloaded');
-});
-
-ipcMain.on('restart_app', () => {
-  autoUpdater.quitAndInstall();
 });
