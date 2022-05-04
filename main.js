@@ -152,8 +152,8 @@ function createWindow(width, height) {
         cancelId: 1
       })
       if (response === 0) {
-        mainWindow.forcefullyCrashRenderer();
-        mainWindow.reload();
+        mainWindow.webContents.forcefullyCrashRenderer();
+        mainWindow.webContents.reload();
       }
     });
   } catch (e) {
