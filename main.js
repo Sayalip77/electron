@@ -143,18 +143,22 @@ function createWindow(width, height) {
     });
   });
 
-  mainWindow.webContents.on('unresponsive', async () => {
-    const { response } = await dialog.showMessageBox({
-      message: 'WeConnect App has become unresponsive',
-      title: 'Do you want to try forcefully reloading the app?',
-      buttons: ['OK', 'Cancel'],
-      cancelId: 1
-    })
-    if (response === 0) {
-      mainWindow.webContents.forcefullyCrashRenderer();
-      mainWindow.webContents.reload();
-    }
-  });
+  try {
+    mainWindow.webContents.on('unresponsive', async () => {
+      const { response } = await dialog.showMessageBox({
+        message: 'WeConnect App has become unresponsive',
+        title: 'Do you want to try forcefully reloading the app?',
+        buttons: ['OK', 'Cancel'],
+        cancelId: 1
+      })
+      if (response === 0) {
+        mainWindow.forcefullyCrashRenderer();
+        mainWindow.reload();
+      }
+    });
+  } catch (e) {
+      dialog.showErrorBox('Error', `error: ${e}`);
+  }
   // Open the DevTools.
   //mainWindow.webContents.openDevTools();
   // loading.webContents.openDevTools();
