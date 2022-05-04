@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, session, Menu, Tray, dialog, Notification  } = require("electron");
+const { app, BrowserWindow, session, Menu, Tray, dialog, autoUpdater } = require("electron");
 const path = require("path");
 const Store = require("electron-store");
 const store = new Store();
@@ -183,15 +183,12 @@ if (!gotTheLock) {
         isMainWindowHidden = false;
       }
     });
+    const server = 'https://github.com';
+    const feed = `${server}/Sayalip77/electron/${process.platform}-${process.arch}/${app.getVersion()}`;
+    autoUpdater.setFeedURL(feed);
+    autoUpdater.checkForUpdates()
   });
 }
-
-require('update-electron-app')({
-  repo: 'https://github.com/Sayalip77/electron', // defaults to package.json
-  updateInterval: '5 minutes',
-  notifyUser: true,
-  logger: require('electron-log')
-});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
