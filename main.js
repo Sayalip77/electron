@@ -251,4 +251,4 @@ app.on('unresponsive', async () => {
     app.forcefullyCrashRenderer()
     app.reload()
   }
-})
+});
