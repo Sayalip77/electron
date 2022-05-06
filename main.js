@@ -85,6 +85,7 @@ function createWindow(width, height) {
     }
     mainWindow.webContents.once("dom-ready", () => {
       console.log("main loaded");
+      log.warn('App: Main loaded sucessfully..');
       mainWindow.show();
       mainWindow.maximize();
       isMainWindowHidden = false;
@@ -154,10 +155,12 @@ function createWindow(width, height) {
       if (response === 0) {
         mainWindow.webContents.forcefullyCrashRenderer();
         mainWindow.webContents.reload();
+        log.warn('Warn: App Reloaded..');
       }
+      log.warn('Warn: Unresponsive function successful..');
     });
   } catch (e) {
-      dialog.showErrorBox('Error', `error: ${e}`);
+      log.error('Error: Unresponsive function failed..');
   }
   // Open the DevTools.
   //mainWindow.webContents.openDevTools();
@@ -171,24 +174,30 @@ function sendStatusToWindow(text) {
 
 autoUpdater.on('checking-for-update', () => {
   sendStatusToWindow('Checking for update...');
+  log.warn('Checking for update...');
 })
 autoUpdater.on('update-available', (info) => {
   sendStatusToWindow('Update available.');
+  log.warn('Update available.');
 })
 autoUpdater.on('update-not-available', (info) => {
   sendStatusToWindow('Update not available.');
+  log.warn('Update not available.');
 })
 autoUpdater.on('error', (err) => {
   sendStatusToWindow('Error in auto-updater. ' + err);
+  log.error(`Error: ${err}`);
 })
 autoUpdater.on('download-progress', (progressObj) => {
   let log_message = "Download speed: " + progressObj.bytesPerSecond;
   log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
   log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
   sendStatusToWindow(log_message);
+  log.warn(log_message);
 })
 autoUpdater.on('update-downloaded', (info) => {
   sendStatusToWindow('Update downloaded');
+  log.warn('Update downloaded');
 });
 
 // This method will be called when Electron has finished
