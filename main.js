@@ -121,10 +121,10 @@ function createWindow(width, height) {
       }
     });
 
-    mainWindow.loadURL("https://app.weconnect.chat/raibu");
+    mainWindow.loadURL("https://app.weconnect.chat/agent/dashboard");
     mainWindow.webContents.on("new-window", (e, currentURL) => {
       if (!currentURL.includes("https://accounts.google")) {
-        if (currentURL.includes("https://app.weconnect.chat/raibu")) {
+        if (currentURL.includes("https://app.weconnect.chat/agent/dashboard")) {
           e.preventDefault();
           mainWindow.show();
           mainWindow.maximize();
